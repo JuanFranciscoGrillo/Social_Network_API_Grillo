@@ -1,11 +1,10 @@
-// models/Thought.js
 const mongoose = require('mongoose');
-const reactionSchema = require('./Reaction'); // Make sure this path is correct
+const reactionSchema = require('./Reaction');
 
 const thoughtSchema = new mongoose.Schema({
   thoughtText: {
     type: String,
-    required: true,
+    required: [true, 'Thought text is required'],
     minlength: 1,
     maxlength: 280
   },
@@ -16,17 +15,15 @@ const thoughtSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    required: true
+    required: [true, 'Username is required']
   },
   reactions: [reactionSchema]
 }, {
-  toJSON: {
-    virtuals: true,
-    getters: true
-  },
+  toJSON: { virtuals: true, getters: true },
   id: false
 });
 
+// Virtual for reaction count
 thoughtSchema.virtual('reactionCount').get(function() {
   return this.reactions.length;
 });

@@ -1,31 +1,26 @@
-// models/Reaction.js
 const mongoose = require('mongoose');
 
 const reactionSchema = new mongoose.Schema({
   reactionId: {
     type: mongoose.Schema.Types.ObjectId,
-    default: () => new mongoose.Types.ObjectId(),
-    auto: true
+    default: () => new mongoose.Types.ObjectId()
   },
   reactionBody: {
     type: String,
-    required: true,
-    maxlength: 280 // Ensure this aligns with your requirements
+    required: [true, 'Reaction body is required'],
+    maxlength: 280
   },
   username: {
     type: String,
-    required: true
+    required: [true, 'Username is required']
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    get: timestamp => timestamp ? new Date(timestamp).toISOString() : null
+    get: timestamp => new Date(timestamp).toISOString()
   }
 }, {
-  toJSON: {
-    getters: true
-  },
-  id: false
+  toJSON: { getters: true }
 });
 
 module.exports = reactionSchema;
