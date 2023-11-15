@@ -1,6 +1,6 @@
 // models/User.js
 const mongoose = require('mongoose');
-const validator = require('validator'); // To validate email
+const validator = require('validator'); // To validate email addresses
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -11,9 +11,12 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
-    validate: [validator.isEmail, 'Please enter a valid email address']
+    required: true,
+    validate: {
+      validator: email => validator.isEmail(email),
+      message: 'Please enter a valid email address'
+    }
   },
   thoughts: [
     {
@@ -34,6 +37,7 @@ const userSchema = new mongoose.Schema({
   id: false
 });
 
+// Virtual to get the count of friends
 userSchema.virtual('friendCount').get(function() {
   return this.friends.length;
 });

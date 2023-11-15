@@ -5,7 +5,7 @@ const userController = {
   // Get all users
   async getAllUsers(req, res) {
     try {
-      const users = await User.find({});
+      const users = await User.find({}).populate('thoughts').populate('friends');
       res.json(users);
     } catch (err) {
       res.status(500).json(err);
@@ -17,7 +17,7 @@ const userController = {
     try {
       const user = await User.findById(req.params.id).populate('thoughts').populate('friends');
       if (!user) {
-        res.status(404).json({ message: 'No user found with this id!' });
+        res.status(404).json({ message: 'No user found with this ID!' });
         return;
       }
       res.json(user);
@@ -39,12 +39,12 @@ const userController = {
   // Update a user by ID
   async updateUser(req, res) {
     try {
-      const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!user) {
-        res.status(404).json({ message: 'No user found with this id!' });
+      const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedUser) {
+        res.status(404).json({ message: 'No user found with this ID!' });
         return;
       }
-      res.json(user);
+      res.json(updatedUser);
     } catch (err) {
       res.status(400).json(err);
     }
@@ -53,21 +53,23 @@ const userController = {
   // Delete a user by ID
   async deleteUser(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.params.id);
+      const user = await User.findById(req.params.id);
       if (!user) {
-        res.status(404).json({ message: 'No user found with this id!' });
+        res.status(404).json({ message: 'No user found with this ID!' });
         return;
       }
-      // Also delete associated thoughts (Bonus)
-      await Thought.deleteMany({ _id: { $in: user.thoughts } });
 
-      res.json({ message: 'User and associated thoughts deleted!' });
+      // Delete user's thoughts
+      await Thought.deleteMany({ _id: { $in: user.thoughts } });
+      await user.remove();
+
+      res.json({ message: 'User and their thoughts deleted!' });
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  // Additional methods for friend management can be added here
+  // Additional methods for friends (POST and DELETE) can be added here
 };
 
 module.exports = userController;
