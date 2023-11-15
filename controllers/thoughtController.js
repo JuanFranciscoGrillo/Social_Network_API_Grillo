@@ -17,7 +17,7 @@ const thoughtController = {
     try {
       const thought = await Thought.findById(req.params.id);
       if (!thought) {
-        res.status(404).json({ message: 'No thought found with this id!' });
+        res.status(404).json({ message: 'No thought found with this ID!' });
         return;
       }
       res.json(thought);
@@ -30,7 +30,7 @@ const thoughtController = {
   async createThought(req, res) {
     try {
       const newThought = await Thought.create(req.body);
-      await User.findByIdAndUpdate(req.body.userId, { $push: { thoughts: newThought._id } }, { new: true });
+      await User.findByIdAndUpdate(req.body.userId, { $push: { thoughts: newThought._id } });
       res.json(newThought);
     } catch (err) {
       res.status(400).json(err);
@@ -40,12 +40,12 @@ const thoughtController = {
   // Update a thought by ID
   async updateThought(req, res) {
     try {
-      const thought = await Thought.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!thought) {
-        res.status(404).json({ message: 'No thought found with this id!' });
+      const updatedThought = await Thought.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedThought) {
+        res.status(404).json({ message: 'No thought found with this ID!' });
         return;
       }
-      res.json(thought);
+      res.json(updatedThought);
     } catch (err) {
       res.status(400).json(err);
     }
@@ -56,16 +56,17 @@ const thoughtController = {
     try {
       const thought = await Thought.findByIdAndDelete(req.params.id);
       if (!thought) {
-        res.status(404).json({ message: 'No thought found with this id!' });
+        res.status(404).json({ message: 'No thought found with this ID!' });
         return;
       }
+      await User.findByIdAndUpdate(thought.userId, { $pull: { thoughts: req.params.id } });
       res.json({ message: 'Thought deleted!' });
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  // Additional methods for handling reactions can be added here
+  // Additional methods for handling reactions (POST and DELETE) can be added here
 };
 
 module.exports = thoughtController;

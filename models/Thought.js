@@ -1,6 +1,6 @@
 // models/Thought.js
 const mongoose = require('mongoose');
-const ReactionSchema = require('./Reaction'); // Assuming Reaction schema is defined in Reaction.js
+const reactionSchema = require('./Reaction'); // Make sure this path is correct
 
 const thoughtSchema = new mongoose.Schema({
   thoughtText: {
@@ -18,7 +18,7 @@ const thoughtSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  reactions: [ReactionSchema]
+  reactions: [reactionSchema]
 }, {
   toJSON: {
     virtuals: true,
